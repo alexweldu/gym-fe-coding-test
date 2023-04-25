@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "24 seven gym",
+    "orgNumber": "123456-7890",
+    "password": "password1",
+    "location": {
+      "address": "123 Main St",
+      "city": "Anytown",
+      "state": "CA",
+      "zip": "12345"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Wellness gym",
+    "orgNumber": "098765-4321",
+    "password": "password2",
+    "location": {
+      "address": "456 Oak St",
+      "city": "Othertown",
+      "state": "CA",
+      "zip": "67890"
+    }
+  },
+  {
+    "id": 3,
+    "name": "Nordic gym",
+    "orgNumber": "111111-2222",
+    "password": "password3",
+    "location": {
+      "address": "789 Maple St",
+      "city": "Somewhere",
+      "state": "CA",
+      "zip": "54321"
+    }
+  }
+]

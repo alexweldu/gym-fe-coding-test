@@ -1,0 +1,24 @@
+# Logs
+logs
+*.log
+
+# Compiled output
+dist
+build
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Environment variables
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# Mac files
+.DS_Store
+
+# Jest coverage output
+coverage/
