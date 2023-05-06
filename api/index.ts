@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import fs from "fs";
 import jwt from "jsonwebtoken";
 import * as yup from "yup";
+const cors = require("cors");
 
 interface Gym {
   id: number;
@@ -43,6 +44,18 @@ const memberSchema = yup.object({
 const app = express();
 const port = process.env.PORT || 4000;
 const secretKey = "my-secret-key";
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 
 // Middleware to parse request body
 app.use(bodyParser.json());
