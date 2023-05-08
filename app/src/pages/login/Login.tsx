@@ -5,7 +5,7 @@ import * as Yup from "yup";
 
 import { useRouter } from "next/router";
 
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 const validationSchema = Yup.object().shape({
   orgNumber: Yup.string().required("orgNumber is required"),
@@ -17,7 +17,7 @@ const LoginPage = () => {
   const [orgNumber, setOrgNumber] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
+  const { data: session } = useSession();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     let ret = await signIn("credentials", {
@@ -29,6 +29,10 @@ const LoginPage = () => {
     router.push("/dashboard/gym");
     console.log("LoginPage", ret);
   };
+  if (session) {
+    router.push("/dashboard/gym");
+    return <></>;
+  }
   return (
     <Grid
       container
