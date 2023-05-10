@@ -5,7 +5,8 @@ function Dashboard() {
   return (
     <Layout>
       <h1>Dashboard</h1>
-      <p>Welcome to the dashboard!</p>
+      <p>Welcome to the Admin Page!</p>
+      <p>Loading...</p>
     </Layout>
   );
 }

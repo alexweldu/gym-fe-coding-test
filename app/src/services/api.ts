@@ -55,11 +55,13 @@ export const createMembers = async (data: any, token: string) => {
 };
 
 export const updateMember = async (
-  memberId: number,
-  gymId: number,
+  memberId: any,
+  gymId: any,
   data: any,
   token: string
 ) => {
+  // console.log("updateMember", data);
+
   try {
     const response: AxiosResponse = await api.put(
       `/members/${memberId}`,
@@ -67,7 +69,7 @@ export const updateMember = async (
       getHeaders(token)
     );
     console.log("axios response", response.data);
-    return response.data;
+    return response;
   } catch (error) {
     handleErrors(error);
   }

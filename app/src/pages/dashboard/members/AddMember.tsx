@@ -42,6 +42,11 @@ const AddMember = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   const handleOpen = () => {
     setOpen(true);
@@ -62,21 +67,25 @@ const AddMember = () => {
             initialValues={initialValues}
             validationSchema={AddMemberSchema}
             onSubmit={async (values) => {
+              setIsLoading(true);
               if (!session?.user?.token) return;
               const token = session.user.token;
-              const response = await createMembers(values, token);
-              console.log("Submite:", response);
-              if (response) {
-                <CustomSnackbar
-                  message='Successfully Created'
-                  severity='success'
-                  open={open}
-                  onClose={() => setOpen(false)}
-                  autoHideDuration={600}
-                />;
+              try {
+                const response = await createMembers(values, token);
+                console.log("Submit:", response);
+                setSnackbar({
+                  open: true,
+                  message: "Successfully created",
+                  severity: "success",
+                });
+              } catch (error) {
+                console.error("Error:", error);
+                setSnackbar({
+                  open: true,
+                  message: "An error occurred",
+                  severity: "error",
+                });
               }
-              router.push("/dashboard/members");
-
               setIsLoading(false);
               handleClose();
             }}

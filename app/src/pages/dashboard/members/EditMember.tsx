@@ -2,6 +2,7 @@ import CustomSnackbar from "@/components/widgets/Snackbar";
 import { getMembers, updateMember } from "@/services/api";
 import { Edit } from "@mui/icons-material";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -9,12 +10,14 @@ import {
   DialogTitle,
   IconButton,
   TextField,
+  Typography,
 } from "@mui/material";
-import { useFormik } from "formik";
+import axios from "axios";
+import { Formik, useFormik } from "formik";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import useSWR from "swr";
+import React, { useEffect, useState } from "react";
+import useSWR, { useSWRConfig } from "swr";
 interface GymMember {
   id: number;
   gymId: number;
@@ -30,21 +33,18 @@ interface GymMember {
 }
 
 interface Props {
-  gymId: number;
-  memberId: number;
   member: GymMember;
 }
 
-const UpdateMemberForm = ({ gymId, memberId, member }: Props) => {
-  const [updating, setUpdating] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+const UpdateMemberFormWith: React.FC<Props> = ({ member }) => {
+  const { query } = useRouter();
+  const { mutate } = useSWRConfig();
   const { data: session } = useSession();
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const formik = useFormik({
     initialValues: {
-      name: member?.name ?? "",
-      email: member?.email ?? "",
+      name: member.email ?? "",
+      email: member.email ?? "",
       address: {
         street: member?.address?.street ?? "",
         city: member?.address?.city ?? "",
@@ -54,23 +54,11 @@ const UpdateMemberForm = ({ gymId, memberId, member }: Props) => {
     },
     onSubmit: async (values) => {
       try {
-        setUpdating(true);
         if (!session?.user?.token) return;
 
         const token = session.user.token;
-        const res = await updateMember(memberId, gymId, values, token);
+        const res = await updateMember("memberId", "gymId", values, token);
 
-        if (!res) {
-          return (
-            <CustomSnackbar
-              message='Updated'
-              severity='success'
-              autoHideDuration={600}
-              open={open}
-              onClose={handleClose}
-            />
-          );
-        }
         //   const res = await update(values, token);
         // const res = await fetch(`/members/${memberId}`, {
         //   method: "PUT",
@@ -95,40 +83,48 @@ const UpdateMemberForm = ({ gymId, memberId, member }: Props) => {
 
         // if (!res.ok) {
         //   throw new Error("Failed to update member.");
-        // }
-        console.log("Updated");
-
-        setOpenDialog(false);
       } catch (error) {
         console.error(error);
       } finally {
-        setUpdating(false);
       }
     },
   });
-  const handleClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
 
-    setOpen(false);
-  };
+  const handleGoBack = () => {};
+
   return (
     <div>
-      <IconButton
-        aria-label='delete'
-        color='info'
-        onClick={() => setOpenDialog(true)}
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        <Edit />
-      </IconButton>
-      <Dialog open={openDialog}>
-        <DialogTitle>Edit Member </DialogTitle>
-        <form onSubmit={formik.handleSubmit}>
-          <DialogContent>
+        <Box sx={{ width: "100%", maxWidth: 700, pb: 2 }}>
+          <Typography variant='h4'> Edit Memeber</Typography>
+          <Formik
+            initialValues={{
+              name: member.email ?? "",
+              email: member.email ?? "",
+              address: {
+                street: member?.address?.street ?? "",
+                city: member?.address?.city ?? "",
+                state: member?.address?.state ?? "",
+                zip: member?.address?.zip ?? "",
+              },
+            }}
+            onSubmit={async (values, { setSubmitting, resetForm }) => {
+              setIsSubmitting(true);
+              try {
+                await axios.put(`/dashboard/members/${query.id}`, {
+                  ...values,
+                });
+                mutate(`/dashboard/members?id=${member.id}`);
+                resetForm();
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+          >
             <TextField
               fullWidth
               margin='normal'
@@ -177,10 +173,9 @@ const UpdateMemberForm = ({ gymId, memberId, member }: Props) => {
               value={formik.values.address.zip}
               onChange={formik.handleChange}
             />
-          </DialogContent>
-          <DialogActions>
+
             <Button
-              onClick={() => setOpenDialog(false)}
+              onClick={() => handleGoBack()}
               variant='contained'
               style={{ color: "secondary" }}
             >
@@ -190,10 +185,10 @@ const UpdateMemberForm = ({ gymId, memberId, member }: Props) => {
             <Button type='submit' variant='contained'>
               Update
             </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+          </Formik>
+        </Box>
+      </Box>
     </div>
   );
 };
-export default UpdateMemberForm;
+export default UpdateMemberFormWith;

@@ -6,11 +6,13 @@ import {
   Container,
   Divider,
   Paper,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { getMembersByID } from "@/services/api";
 import Link from "next/link";
+import { Formik } from "formik";
 
 interface GymMember {
   id: number;
@@ -31,6 +33,7 @@ export default function Member() {
   const { id } = router.query;
   const [member, setMember] = useState<GymMember | null>(null);
   const { data: session } = useSession();
+  const isEditPage = router.pathname.includes("/edit");
 
   useEffect(() => {
     const fetchMember = async () => {

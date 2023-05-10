@@ -1,7 +1,7 @@
 import CustomSnackbar from "@/components/widgets/Snackbar";
 import withAuth from "@/pages/api/auth/withAuth";
 import { getMembers } from "@/services/api";
-import { Add, Menu, MoreHoriz, Search } from "@mui/icons-material";
+import { Add, Edit, Menu, MoreHoriz, Search } from "@mui/icons-material";
 import {
   Box,
   Fab,
@@ -25,6 +25,7 @@ import UpdateMemberForm from "./EditMember";
 import MemberForm from "./components/MemberForm";
 
 import AddMember from "./AddMember";
+import EditMemberPage from "./edit/[id]";
 
 // The GymMember type
 type GymMember = {
@@ -87,6 +88,12 @@ const Members = () => {
   };
 
   const handleClose = () => setOpen(false);
+  const handleEdit = (member: any) => {
+    console.log(member);
+    router.push({
+      pathname: `/dashboard/members/edit/${member}`,
+    });
+  };
   const gotToAddMember = () => {
     router.push("/dashboard/members/AddMember");
   };
@@ -185,13 +192,25 @@ const Members = () => {
                           </IconButton>
                         </Link>
                         <Tooltip title='Edit Member'>
-                          <IconButton>
+                          {/* <IconButton>
                             <UpdateMemberForm
                               gymId={member.gymId}
                               memberId={member.id}
                               member={member}
                             />
-                          </IconButton>
+                          </IconButton> */}
+
+                          <Link
+                            href={`/dashboard/members/edit/${member.id}`}
+                            key={member.id}
+                            passHref
+                          >
+                            <IconButton color='info'>
+                              {" "}
+                              <Edit />{" "}
+                            </IconButton>
+                            {/* <EditMemberPage member={member} /> */}
+                          </Link>
                         </Tooltip>
                         {/* There is no given Task for this  remove at the end of */}
                         {/* <Tooltip title='Delete Member'>
