@@ -1,5 +1,4 @@
-import CustomSnackbar from "@/components/widgets/Snackbar";
-import { createMembers } from "@/services/api";
+import { createMembers, getMembers } from "@/services/api";
 import { Add, Cancel } from "@mui/icons-material";
 import {
   Box,
@@ -9,12 +8,16 @@ import {
   DialogContent,
   DialogTitle,
   Fab,
+  IconButton,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { enqueueSnackbar } from "notistack";
+import { useEffect, useState } from "react";
+import useSWR, { mutate } from "swr";
 import * as Yup from "yup";
 const AddMemberSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -37,57 +40,50 @@ const initialValues = {
     zip: "",
   },
 };
-const AddMember = () => {
+type OnSubmitCallback = (data: any) => void;
+interface MembersFormProps {
+  onSubmit: OnSubmitCallback;
+}
+const AddMember: React.FC<MembersFormProps> = ({ members, onSubmit }: any) => {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "",
-  });
+  const [token, setToken] = useState("");
 
+  useEffect(() => {
+    if (!session?.user?.token) return;
+
+    const token = session.user.token;
+    setToken(token);
+  }, [session]);
   const handleOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
-    router.push("/dashboard/members");
+    // router.push("/dashboard/members");
   };
 
   return (
     <>
-      <Box
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        <Box sx={{ width: "100%", maxWidth: 700, pb: 2 }}>
+      <Tooltip title='Add Member'>
+        <IconButton>
+          {/* <AddMember /> */}
+          <Fab variant='circular' color='primary' onClick={handleOpen}>
+            <Add />
+          </Fab>
+        </IconButton>
+      </Tooltip>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogContent>
           <Formik
             initialValues={initialValues}
             validationSchema={AddMemberSchema}
             onSubmit={async (values) => {
-              setIsLoading(true);
-              if (!session?.user?.token) return;
-              const token = session.user.token;
-              try {
-                const response = await createMembers(values, token);
-                console.log("Submit:", response);
-                setSnackbar({
-                  open: true,
-                  message: "Successfully created",
-                  severity: "success",
-                });
-              } catch (error) {
-                console.error("Error:", error);
-                setSnackbar({
-                  open: true,
-                  message: "An error occurred",
-                  severity: "error",
-                });
-              }
-              setIsLoading(false);
-              handleClose();
+              onSubmit(values);
+              setOpen(false);
             }}
           >
             {(formik) => (
@@ -198,8 +194,8 @@ const AddMember = () => {
               </Form>
             )}
           </Formik>
-        </Box>
-      </Box>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

@@ -1,7 +1,7 @@
-
+'use client'
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
-
+import setCookie from 'cookies-next'
 export default NextAuth({
   providers: [
     CredentialsProvider({
@@ -24,6 +24,7 @@ export default NextAuth({
         const user = await res.json();
         console.log("useraccess", user);
         if (user) {
+
           return user;
         } else {
           return null;
@@ -38,6 +39,7 @@ export default NextAuth({
     },
     async session({ session, token }) {
       console.log("session::::", token);
+
 
       session.user = token;
       return session;

@@ -5,10 +5,11 @@ import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import Dashboard from "./dashboard/Dashboard";
 import Layout from "@/components/Layout/Layout";
-
+import { SnackbarProvider, enqueueSnackbar } from "notistack";
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
   return (
     <ThemeProvider theme={theme}>
+      <SnackbarProvider />
       <SessionProvider session={session}>
         <CssBaseline />
         <Layout>

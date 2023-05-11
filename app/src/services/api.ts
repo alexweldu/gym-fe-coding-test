@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { CookieValueTypes } from "cookies-next";
 
 const api = axios.create({
   baseURL: "http://localhost:4000",
@@ -40,12 +41,14 @@ export const getGym = async (token: string) => {
   }
 };
 
-export const createMembers = async (data: any, token: string) => {
+export const createMembers = async (data: any, token: any) => {
+  console.log("data:::", data, token);
+
   try {
     const response: AxiosResponse = await api.post(
       "/members",
-      data,
-      getHeaders(token)
+      JSON.stringify(data),
+      getHeaders(token?.toString())
     );
     console.log("axios response", response.data);
     return response.data;
@@ -60,12 +63,21 @@ export const updateMember = async (
   data: any,
   token: string
 ) => {
-  // console.log("updateMember", data);
+  console.log("updateMember", data, "memberId", memberId, "token", token);
 
   try {
     const response: AxiosResponse = await api.put(
       `/members/${memberId}`,
-      { gymId, ...data },
+      {
+        name: data.name,
+        email: data.email,
+        address: {
+          street: data.street,
+          city: data.city,
+          state: data.state,
+          zip: data.zip,
+        },
+      },
       getHeaders(token)
     );
     console.log("axios response", response.data);
@@ -76,6 +88,7 @@ export const updateMember = async (
 };
 
 export const getMembers = async (token: string) => {
+  console.log("token:::alex", token);
   try {
     const response: AxiosResponse = await api.get(
       "/members",

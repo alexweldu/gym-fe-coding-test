@@ -1,4 +1,3 @@
-import CustomSnackbar from "@/components/widgets/Snackbar";
 import { deleteMember } from "@/services/api";
 import { Delete } from "@mui/icons-material";
 import {
@@ -11,12 +10,14 @@ import {
   IconButton,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 type Props = {
   gymId: number;
   memberId: number;
+  refresh: () => void;
 };
 
 type DeleteDialogProps = {
@@ -53,37 +54,35 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
   );
 };
 
-const DeleteMemberTableRow: React.FC<Props> = ({ gymId, memberId }) => {
+const DeleteMemberTableRow: React.FC<Props> = ({
+  gymId,
+  memberId,
+  refresh,
+}) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { data: session } = useSession();
-  const [open, setOpen] = useState(false);
 
-  const { data, error, mutate } = useSWR("/members", deleteMember);
+  const [token, setToken] = useState("");
+  useEffect(() => {
+    if (!session?.user?.token) return;
 
+    const token = session.user.token;
+    setToken(token);
+  }, [session]);
   const handleDeleteClick = () => {
     setDeleteDialogOpen(true);
   };
-  const handleClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
 
-    setOpen(false);
-  };
   const handleDeleteConfirm = async () => {
-    if (!session?.user?.token) return;
-    const token = session.user.token;
-    console.log("token s", token);
     try {
       const response = await deleteMember(memberId, token);
+      await deleteMember(memberId, token);
+      refresh();
+
       console.log(response);
     } catch (error) {
       console.log(error);
     }
-    mutate();
   };
 
   return (

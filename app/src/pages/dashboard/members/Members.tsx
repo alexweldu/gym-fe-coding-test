@@ -1,10 +1,9 @@
 import CustomSnackbar from "@/components/widgets/Snackbar";
 import withAuth from "@/pages/api/auth/withAuth";
-import { getMembers } from "@/services/api";
-import { Add, Edit, Menu, MoreHoriz, Search } from "@mui/icons-material";
+import { createMembers, getMembers } from "@/services/api";
+import { Menu, MoreHoriz, Search } from "@mui/icons-material";
 import {
   Box,
-  Fab,
   IconButton,
   InputBase,
   Paper,
@@ -20,12 +19,13 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import useSWR from "swr";
-import UpdateMemberForm from "./EditMember";
-import MemberForm from "./components/MemberForm";
+import useSWR, { mutate } from "swr";
 
 import AddMember from "./AddMember";
-import EditMemberPage from "./edit/[id]";
+import UpdateMemberFormWith from "./EditMember";
+import DeleteMemberTableRow from "./components/DeleteDialog";
+import { enqueueSnackbar } from "notistack";
+import { getCookie, setCookie } from "cookies-next";
 
 // The GymMember type
 type GymMember = {
@@ -45,27 +45,27 @@ type GymMember = {
 const Members = () => {
   const { data: session } = useSession();
   const [open, setOpen] = React.useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [members, setMembers] = useState<GymMember[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [members, setMembers] = useState<GymMember[]>([]);
   const [token, setToken] = React.useState("");
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredMembers, setFilteredMembers] = useState<GymMember[]>([]);
-  const { mutate } = useSWR("/members", getMembers);
+
   useEffect(() => {
     const fetchmembers = async () => {
       if (!session?.user?.token) return;
-
+      setCookie("mtoken", session.user.token);
       const token = session.user.token;
       const response = await getMembers(token);
+      setToken(token);
       console.log("response", response);
-      setMembers(response);
+
       setFilteredMembers(response);
       if (!response) {
         setOpen(true);
         setToken(token);
       }
-      setIsLoading(false);
     };
 
     fetchmembers();
@@ -74,46 +74,34 @@ const Members = () => {
   const handleSearchChange = (value: any) => {
     const query = value.toLowerCase();
     setSearchQuery(query);
-
-    if (query === "") {
-      setFilteredMembers([]);
-    } else {
-      const newFilteredMembers = members.filter(
-        (member: GymMember) =>
-          member.name.toLowerCase().includes(query) ||
-          member.email.toLowerCase().includes(query)
-      );
-      setFilteredMembers(newFilteredMembers);
-    }
   };
 
   const handleClose = () => setOpen(false);
-  const handleEdit = (member: any) => {
-    console.log(member);
-    router.push({
-      pathname: `/dashboard/members/edit/${member}`,
-    });
-  };
-  const gotToAddMember = () => {
-    router.push("/dashboard/members/AddMember");
-  };
-  if (isLoading) {
-    return <div>Loading gym data...</div>;
-  }
+  const submitData = async (values: any) => {
+    try {
+      const value = undefined;
+      const token = getCookie("mtoken");
 
-  if (!members) {
-    return (
-      <div>
-        Error loading Members data
-        <CustomSnackbar
-          open={open}
-          onClose={handleClose}
-          message='Error loading gym data!'
-          severity='error'
-        />
-      </div>
-    );
-  }
+      const resp = await createMembers(values, token);
+      if (resp) {
+        enqueueSnackbar({
+          message: "Successfully Add",
+          variant: "success",
+          autoHideDuration: 3000,
+        });
+        const token = getCookie("mtoken");
+        const response = await getMembers(token as string);
+        setFilteredMembers(response);
+      }
+    } catch (error) {
+      console.log("mmmmmmm", error);
+    }
+  };
+  const handleRefresh = async () => {
+    const token = getCookie("mtoken");
+    const response = await getMembers(token as string);
+    setFilteredMembers(response);
+  };
 
   return (
     <Box
@@ -148,18 +136,7 @@ const Members = () => {
             <Search />
           </IconButton>
           <Box sx={{ ml: "auto" }}>
-            <Tooltip title='Add Member'>
-              <IconButton>
-                {/* <AddMember /> */}
-                <Fab
-                  variant='circular'
-                  color='primary'
-                  onClick={gotToAddMember}
-                >
-                  <Add />
-                </Fab>
-              </IconButton>
-            </Tooltip>
+            <AddMember onSubmit={submitData} />
           </Box>
         </Paper>
       </Box>
@@ -191,36 +168,22 @@ const Members = () => {
                             <MoreHoriz />
                           </IconButton>
                         </Link>
-                        <Tooltip title='Edit Member'>
-                          {/* <IconButton>
-                            <UpdateMemberForm
+
+                        <UpdateMemberFormWith
+                          member={member}
+                          refresh={handleRefresh}
+                        />
+
+                        {/* There is no given Task for this  remove at the end of */}
+                        <Tooltip title='Delete Member'>
+                          <IconButton>
+                            <DeleteMemberTableRow
+                              refresh={handleRefresh}
                               gymId={member.gymId}
                               memberId={member.id}
-                              member={member}
                             />
-                          </IconButton> */}
-
-                          <Link
-                            href={`/dashboard/members/edit/${member.id}`}
-                            key={member.id}
-                            passHref
-                          >
-                            <IconButton color='info'>
-                              {" "}
-                              <Edit />{" "}
-                            </IconButton>
-                            {/* <EditMemberPage member={member} /> */}
-                          </Link>
+                          </IconButton>
                         </Tooltip>
-                        {/* There is no given Task for this  remove at the end of */}
-                        {/* <Tooltip title='Delete Member'>
-              <IconButton>
-                <DeleteMemberTableRow
-                  gymId={member.gymId}
-                  memberId={member.id}
-                />
-              </IconButton>
-            </Tooltip> */}
                       </Box>
                     </TableCell>
                   </TableRow>
