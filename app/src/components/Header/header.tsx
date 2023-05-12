@@ -15,6 +15,7 @@ const Header = () => {
           size='large'
           edge='start'
           color='inherit'
+          onClick={() => {}}
           aria-label='menu'
           sx={{ mr: 2 }}
         >

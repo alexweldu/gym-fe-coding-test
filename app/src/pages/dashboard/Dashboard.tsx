@@ -1,7 +1,7 @@
+import { Box } from "@mui/material";
+import { NextPageContext } from "next";
 import { getSession } from "next-auth/react";
 import Layout from "../../components/Layout";
-import { NextPageContext } from "next";
-import { Box } from "@mui/material";
 function Dashboard() {
   return (
     <Layout>

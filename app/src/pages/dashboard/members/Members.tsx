@@ -25,7 +25,6 @@ import AddMember from "./AddMember";
 import UpdateMemberFormWith from "./EditMember";
 import DeleteMemberTableRow from "./components/DeleteDialog";
 
-// The GymMember type
 type GymMember = {
   id: number;
   name: string;
@@ -43,8 +42,7 @@ type GymMember = {
 const Members = () => {
   const { data: session } = useSession();
   const [open, setOpen] = React.useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [members, setMembers] = useState<GymMember[]>([]);
+
   const [token, setToken] = React.useState("");
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -121,7 +119,7 @@ const Members = () => {
             },
           }}
         >
-          <IconButton sx={{ p: "10px" }} aria-label='menu'>
+          <IconButton onClick={() => {}} sx={{ p: "10px" }} aria-label='menu'>
             <Menu />
           </IconButton>
           <InputBase
@@ -130,7 +128,12 @@ const Members = () => {
             placeholder='Search'
             inputProps={{ "aria-label": "search" }}
           />
-          <IconButton type='submit' sx={{ p: "10px" }} aria-label='search'>
+          <IconButton
+            onClick={() => {}}
+            type='submit'
+            sx={{ p: "10px" }}
+            aria-label='search'
+          >
             <Search />
           </IconButton>
           <Box sx={{ ml: "auto" }}>
@@ -162,7 +165,7 @@ const Members = () => {
                           key={member.id}
                           passHref
                         >
-                          <IconButton>
+                          <IconButton onClick={() => {}}>
                             <MoreHoriz />
                           </IconButton>
                         </Link>
@@ -173,7 +176,7 @@ const Members = () => {
                         />
 
                         {/* There is no given Task for this  remove at the end of */}
-                        <Tooltip title='Delete Member'>
+                        {/* <Tooltip title='Delete Member'>
                           <IconButton>
                             <DeleteMemberTableRow
                               refresh={handleRefresh}
@@ -181,7 +184,7 @@ const Members = () => {
                               memberId={member.id}
                             />
                           </IconButton>
-                        </Tooltip>
+                        </Tooltip> */}
                       </Box>
                     </TableCell>
                   </TableRow>

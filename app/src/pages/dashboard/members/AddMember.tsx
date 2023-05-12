@@ -60,13 +60,12 @@ const AddMember: React.FC<MembersFormProps> = ({ members, onSubmit }: any) => {
 
   const handleClose = () => {
     setOpen(false);
-    // router.push("/dashboard/members");
   };
 
   return (
     <>
       <Tooltip title='Add Member'>
-        <IconButton>
+        <IconButton onClick={() => {}}>
           {/* <AddMember /> */}
           <Fab variant='circular' color='primary' onClick={handleOpen}>
             <Add />

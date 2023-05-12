@@ -57,7 +57,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
+
   ...theme.mixins.toolbar,
 }));
 const Drawer = styled(MuiDrawer, {
@@ -147,7 +147,6 @@ const SideMenu = (token: any) => {
   const logout = () => {
     const isLoggedIn = false;
 
-    // Cookies.set("isLoggedIn", isLoggedIn.toString());
     router.push("/");
     setOpen(false);
   };
@@ -187,7 +186,6 @@ const SideMenu = (token: any) => {
             </IconButton>
             <Menu
               id='menu-appbar'
-              // anchorEl={anchorEl}
               anchorOrigin={{
                 vertical: "top",
                 horizontal: "right",
@@ -232,7 +230,7 @@ const SideMenu = (token: any) => {
           <ListItem key={"GYM"} disablePadding sx={{ display: "block" }}>
             <Link className={styles.link} href={`/dashboard/gym`}>
               <Tooltip title='GYM'>
-                <IconButton>
+                <IconButton onClick={() => {}}>
                   <ListItemButton
                     onClick={() => handleGym()}
                     sx={{
@@ -265,7 +263,7 @@ const SideMenu = (token: any) => {
           <ListItem key={"Members"} disablePadding sx={{ display: "block" }}>
             <Link className={styles.link} href={`/dashboard/members`}>
               <Tooltip title='Members'>
-                <IconButton>
+                <IconButton onClick={() => {}}>
                   <ListItemButton
                     onClick={() => handleMembers()}
                     sx={{
@@ -298,7 +296,7 @@ const SideMenu = (token: any) => {
           <ListItem key={"Settings"} disablePadding sx={{ display: "block" }}>
             <Link className={styles.link} href={`/dashboard/settings`}>
               <Tooltip title='Settings'>
-                <IconButton>
+                <IconButton onClick={() => {}}>
                   <ListItemButton
                     onClick={() => handleSettings()}
                     sx={{
