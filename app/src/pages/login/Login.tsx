@@ -16,18 +16,25 @@ const validationSchema = Yup.object().shape({
 const LoginPage = () => {
   const [orgNumber, setOrgNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     let ret = await signIn("credentials", {
       username: orgNumber,
       password: password,
-      redirect: true,
+      redirect: false,
       callbackUrl: "/",
     });
-    router.push("/dashboard/gym");
-    console.log("LoginPage", ret);
+    if (ret?.ok) {
+      router.push("/dashboard/gym");
+      console.log("LoginPage", ret);
+    } else {
+      const errors = ret?.error;
+      setError(error);
+      console.log("Error Login", errors?.toString());
+    }
   };
   if (session) {
     router.push("/dashboard/gym");
@@ -45,6 +52,11 @@ const LoginPage = () => {
           <Typography variant='h4' align='center' gutterBottom>
             Login
           </Typography>
+
+          <Typography variant='h5' align='center' gutterBottom>
+            {error}
+          </Typography>
+
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth

@@ -1,6 +1,6 @@
-import * as React from "react";
+import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
-import Alert, { AlertColor } from "@mui/material/Alert";
+import * as React from "react";
 
 interface CustomSnackbarProps {
   open: boolean;

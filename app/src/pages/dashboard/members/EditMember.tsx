@@ -1,25 +1,20 @@
-import CustomSnackbar from "@/components/widgets/Snackbar";
-import { getMembers, updateMember } from "@/services/api";
+import { updateMember } from "@/services/api";
 import { Edit } from "@mui/icons-material";
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   IconButton,
   TextField,
-  Typography,
 } from "@mui/material";
-import axios from "axios";
 import { Form, Formik, useFormik } from "formik";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { enqueueSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
-import useSWR, { useSWRConfig } from "swr";
+import { useSWRConfig } from "swr";
 import * as Yup from "yup";
 interface GymMember {
   id: number;

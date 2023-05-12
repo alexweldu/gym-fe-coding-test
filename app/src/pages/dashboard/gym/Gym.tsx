@@ -1,12 +1,11 @@
 import CustomSnackbar from "@/components/widgets/Snackbar";
+import withAuth from "@/pages/api/auth/withAuth";
 import { getGym } from "@/services/api";
+import { Grid } from "@mui/material";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import GymCard from "./components/GymCard";
-import { Breadcrumbs, Grid, Typography } from "@mui/material";
-import { useRouter } from "next/router";
-import withAuth from "@/pages/api/auth/withAuth";
-import Link from "next/link";
 
 interface GymResponse {
   id: number;

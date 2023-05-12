@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from "axios";
-import { CookieValueTypes } from "cookies-next";
 
 const api = axios.create({
   baseURL: "http://localhost:4000",

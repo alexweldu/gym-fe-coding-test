@@ -1,18 +1,16 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { getMembersByID } from "@/services/api";
 import {
   Box,
   Button,
   Container,
   Divider,
   Paper,
-  TextField,
   Typography,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { getMembersByID } from "@/services/api";
 import Link from "next/link";
-import { Formik } from "formik";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 interface GymMember {
   id: number;

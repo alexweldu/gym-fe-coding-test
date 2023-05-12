@@ -1,4 +1,3 @@
-import CustomSnackbar from "@/components/widgets/Snackbar";
 import withAuth from "@/pages/api/auth/withAuth";
 import { createMembers, getMembers } from "@/services/api";
 import { Menu, MoreHoriz, Search } from "@mui/icons-material";
@@ -19,13 +18,12 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import useSWR, { mutate } from "swr";
 
+import { getCookie, setCookie } from "cookies-next";
+import { enqueueSnackbar } from "notistack";
 import AddMember from "./AddMember";
 import UpdateMemberFormWith from "./EditMember";
 import DeleteMemberTableRow from "./components/DeleteDialog";
-import { enqueueSnackbar } from "notistack";
-import { getCookie, setCookie } from "cookies-next";
 
 // The GymMember type
 type GymMember = {
